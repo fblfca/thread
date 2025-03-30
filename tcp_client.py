@@ -10,12 +10,23 @@ def setup_logger():
     logging.basicConfig(filename='server.log', level=logging.INFO,
                         format='%(asctime)s - %(message)s')
 
+def find_free_port(start_port):
+    while True:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind(('localhost', start_port))
+                return start_port
+            except OSError:
+                start_port += 1
+
 def start_server(host='localhost', port=65432):
     setup_logger()
+    port = find_free_port(port)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((host, port))
         s.listen()
         logging.info(f"Сервер запущен и слушает порт {port}")
+        print(f"Сервер слушает порт {port}")
 
         while True:
             conn, addr = s.accept()
