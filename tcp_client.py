@@ -1,18 +1,27 @@
 import socket
 
-def start_client(host='localhost', port=11111):
-    # Создаем сокет
+def start_server(host='localhost', port=65432):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((host, port))
-        print("Успешное соединение с сервером!")
+        s.bind((host, port))
+        s.listen()
+        print("Сервер запущен и слушает порт", port)
 
-        # Читаем строку с клавиатуры
-        message = input("Напишите сообщение для отправки его на сервер: ")
-        s.sendall(message.encode())
-        print("Данные отправлены серверу: ", message)
-
-        data = s.recv(1024)
-        print("Получены данные от сервера: ", data.decode())
+        while True:
+            conn, addr = s.accept()
+            with conn:
+                print("Подключение от", addr)
+                while True:
+                    data = conn.recv(1024)
+                    if not data:
+                        break
+                    message = data.decode()
+                    print("Получены данные от клиента:", message)
+                    if message.lower() == "exit":
+                        print("Клиент запросил разрыв соединения:", addr)
+                        break
+                    conn.sendall(data)
+                    print("Данные отправлены клиенту:", message)
+                print("Клиент отключен:", addr)
 
 if __name__ == "__main__":
-    start_client()
+    start_server()
