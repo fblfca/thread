@@ -1,5 +1,10 @@
 import socket
 
+def get_port_and_host():
+    host = input("Введите имя хоста (по умолчанию 'localhost'): ") or 'localhost'
+    port = int(input("Введите номер порта (по умолчанию 65432): ") or 65432)
+    return host, port
+
 def start_server(host='localhost', port=65432):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((host, port))
@@ -24,4 +29,5 @@ def start_server(host='localhost', port=65432):
                 print("Клиент отключен:", addr)
 
 if __name__ == "__main__":
-    start_server()
+    host, port = get_port_and_host()
+    start_server(host, port)
